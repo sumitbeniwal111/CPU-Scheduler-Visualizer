@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Scheduling Visualizer</title>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <h1 class="navbar-title">CPU Scheduler Visualizer</h1>
+            <a href="https://github.com/your-github-profile" target="_blank" class="github-link">
+                <svg class="github-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.499.09.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.909-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.529 2.341 1.088 2.91.828.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.953 0-1.091.39-1.984 1.029-2.682-.103-.253-.446-1.272.098-2.65 0 0 .84-.268 2.75 1.022A9.607 9.607 0 0112 6.865c.85.004 1.704.114 2.504.337 1.909-1.29 2.747-1.022 2.747-1.022.546 1.379.202 2.398.099 2.65.64.698 1.028 1.591 1.028 2.682 0 3.848-2.339 4.69-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.576.687.473C21.133 20.197 24 16.44 24 12.017 24 6.484 19.522 2 14 2h-2z" clip-rule="evenodd" />
+                </svg>
+                GitHub
+            </a>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="card">
+            <h2 class="card-title">Select Your CPU Algorithm</h2>
+            <div class="radio-group">
+                <label for="fcfs">
+                    <input type="radio" id="fcfs" name="algorithm" value="fcfs" checked>
+                    FCFS (First-Come, First-Served)
+                </label>
+                <label for="sjf">
+                    <input type="radio" id="sjf" name="algorithm" value="sjf">
+                    SJF (Shortest Job First - Non-Preemptive)
+                </label>
+                <!-- Extend with more algorithms later -->
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Process Input</h2>
+            <div class="table-container">
+                <table class="input-table">
+                    <thead>
+                        <tr>
+                            <th>Process ID</th>
+                            <th>Arrival Time</th>
+                            <th>Burst Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="processTableBody">
+                        <!-- Initial row -->
+                        <tr>
+                            <td>P1</td>
+                            <td><input type="number" value="0" min="0" class="arrival-time"></td>
+                            <td><input type="number" value="5" min="1" class="burst-time"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="button-group">
+                <button id="addRowBtn" class="btn btn-primary">
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    Add Row
+                </button>
+                <button id="deleteRowBtn" class="btn btn-danger">
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                    Delete Last Row
+                </button>
+            </div>
+            <div class="calculate-button-container">
+                <button id="calculateBtn" class="btn btn-success btn-lg">
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.12 2-2.5 2S4 20.105 4 19s1.12-2 2.5-2S9 17.895 9 19zm12 0c0 1.105-1.12 2-2.5 2S16 20.105 16 19s1.12-2 2.5-2S21 17.895 21 19zm-9-9V3"></path></svg>
+                    Calculate & Visualize
+                </button>
+            </div>
+        </div>
+
+        <div class="card" id="resultsSection" style="display: none;">
+            <h2 class="card-title">Scheduling Results</h2>
+            <div class="table-container mb-20px">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Process ID</th>
+                            <th>Arrival Time</th>
+                            <th>Burst Time</th>
+                            <th>Response Time</th>
+                            <th>Completion Time</th>
+                            <th>Turnaround Time</th>
+                            <th>Waiting Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <!-- Results will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="averages-grid">
+                <div class="average-box blue-box">Avg. Waiting Time: <span id="avgWt">0.00</span></div>
+                <div class="average-box green-box">Avg. Turnaround Time: <span id="avgTat">0.00</span></div>
+                <div class="average-box purple-box">Avg. Completion Time: <span id="avgCt">0.00</span></div>
+            </div>
+        </div>
+
+        <div class="card gantt-chart-container" id="ganttChartSection" style="display: none;">
+            <h2 class="card-title">Gantt Chart</h2>
+            <canvas id="ganttChartCanvas"></canvas>
+            <div id="ganttChartLabels" class="gantt-labels"></div>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
